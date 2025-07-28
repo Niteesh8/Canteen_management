@@ -1,0 +1,14 @@
+[
+  {"id": "tea", "name": "Tea"},
+  {"id": "coffee", "name": "Coffee"},
+  {"id": "samosa", "name": "Samosa"},
+  {"id": "bajji", "name": "Bajji"},
+  {"id": "idli", "name": "Idli"},
+  {"id": "dosa", "name": "Dosa"},
+  {"id": "juice", "name": "Fresh Juice"},
+  {"id": "milk", "name": "Milk"},
+  {"id": "water", "name": "Water"},
+  {"id": "soda", "name": "Soda"},
+  {"id": "coke", "name": "Coke"},
+  {"id": "pepsi", "name": "Pepsi"}
+]
