@@ -31,15 +31,15 @@ app.get('/', (req, res) => {
 });
 
 // Serve static files for admin panel (e.g., admin/admin.html, admin/admin.js)
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use('/admin', express.static(path.join(__dirname, 'Admin')));
 
 // Middleware to parse JSON and URL-encoded data from incoming requests
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Path to your menu data files
-const menuFilePath = path.join(__dirname, 'data', 'menu.json');
-const availableFilePath = path.join(__dirname, 'data', 'available.json');
+const menuFilePath = path.join(__dirname, 'Data', 'menu.json');
+const availableFilePath = path.join(__dirname, 'Data', 'available.json');
 
 // --- API Endpoints ---
 
