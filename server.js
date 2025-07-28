@@ -3,22 +3,35 @@ const bodyParser = require('body-parser'); // To parse form data
 const fs = require('fs'); // Node.js file system module
 const path = require('path'); // Node.js path module
 
-const app = express();
-// Use process.env.PORT for Render, or default to 3000 for local development
-const PORT = process.env.PORT || 3000; 
+// const app = express();
+// // Use process.env.PORT for Render, or default to 3000 for local development
+// const PORT = process.env.PORT || 3000; 
 
-// Middleware to serve static files (HTML, CSS, JS) from the 'public' folder
+// // Middleware to serve static files (HTML, CSS, JS) from the 'public' folder
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// // Explicitly serve index.html for the root path
+// // This ensures that when someone visits your Render URL (e.g., https://your-app.onrender.com/),
+// // it correctly serves the main public page.
+// app.get('/', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public','index.html'));
+// });
+
+// // Serve static files for admin panel (e.g., admin/admin.html, admin/admin.js)
+// app.use('/admin', express.static(path.join(__dirname, 'admin'))); 
+const app = express();
+const PORT = process.env.PORT || 3000; // Corrected: use process.env.PORT for Render
+
+// Middleware to serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Explicitly serve index.html for the root path
-// This ensures that when someone visits your Render URL (e.g., https://your-app.onrender.com/),
-// it correctly serves the main public page.
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Serve static files for admin panel (e.g., admin/admin.html, admin/admin.js)
-app.use('/admin', express.static(path.join(__dirname, 'admin'))); 
+app.use('/admin', express.static(path.join(__dirname, 'admin')));
 
 // Middleware to parse JSON and URL-encoded data from incoming requests
 app.use(bodyParser.json());
