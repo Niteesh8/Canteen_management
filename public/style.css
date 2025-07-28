@@ -1,0 +1,57 @@
+/* public/style.css */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A slightly modern font */
+    background-color: #e0f7fa; /* A very light blue */
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    background-color: #ffffff; /* Pure white container */
+    padding: 30px 50px; /* More padding */
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Stronger, softer shadow */
+    text-align: center;
+    width: 90%;
+    max-width: 650px; /* Slightly wider */
+}
+
+h1 {
+    color: #2c3e50; /* Darker, professional blue/grey */
+    margin-bottom: 25px;
+    font-size: 2.2em; /* Larger heading */
+}
+
+.item-card {
+    background-color: #e8f5e9; /* Even lighter green */
+    border: 1px solid #c8e6c9;
+    padding: 18px; /* More padding */
+    margin-bottom: 12px; /* More space between cards */
+    border-radius: 8px; /* Nicer rounded corners */
+    font-size: 1.3em; /* Slightly larger text */
+    font-weight: bold;
+    color: #388e3c; /* A strong green */
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+}
+
+.item-card:hover {
+    transform: translateY(-3px); /* Lift effect on hover */
+}
+
+.no-items {
+    font-style: italic;
+    color: #7f8c8d; /* Grey color */
+    margin-top: 25px;
+    font-size: 1.1em;
+}
+
+.last-updated {
+    margin-top: 35px;
+    font-size: 0.95em;
+    color: #95a5a6; /* Lighter grey */
+}
