@@ -27,8 +27,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Path to your menu data files
-const menuFilePath = path.join(__dirname, 'data', 'menu.json');
-const availableFilePath = path.join(__dirname, 'data', 'available.json');
+const menuFilePath = path.join(__dirname, 'Data', 'menu.json');
+const availableFilePath = path.join(__dirname, 'Data', 'available.json');
 
 // --- API Endpoints ---
 
