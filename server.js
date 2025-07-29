@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs').promises; // Use promises version of fs
+const fs = require('fs').promises; // Use promises version of fs for async/await
 const bodyParser = require('body-parser'); // For parsing form data
 const session = require('express-session'); // For session management
 require('dotenv').config(); // Load environment variables from .env file (for local testing)
@@ -16,38 +16,50 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'default_admin'; // Fallbac
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'default_password'; // Fallback for development, should be set in .env or Render
 const SESSION_SECRET = process.env.SESSION_SECRET || 'superSecretDefaultKeyForSessions!'; // Fallback for development, should be set in .env or Render
 
-const MENU_FILE = path.join(__dirname, 'Data', 'menu.json'); // Corrected path to 'Data'
-const AVAILABILITY_FILE = path.join(__dirname, 'Data', 'available.json'); // Corrected path to 'Data'
+// Corrected file paths using 'path.join' and correct folder capitalization
+const MENU_FILE = path.join(__dirname, 'Data', 'menu.json');
+const AVAILABILITY_FILE = path.join(__dirname, 'Data', 'available.json');
 
 // --- Middleware ---
 
-// Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public'))); // Corrected path to 'Public'
+// Serve static files from the 'Public' directory (for index.html, public.js, style.css, login.html)
+app.use(express.static(path.join(__dirname, 'public')));
 // Serve static files (CSS, JS) from the 'Admin' directory specifically under the /admin path
-app.use('/admin', express.static(path.join(__dirname, 'Admin'))); // Corrected path to 'Admin'
+app.use('/admin', express.static(path.join(__dirname, 'Admin'))); // Allows admin/style.css and admin/admin.js to be served for /admin route
 
 // Parse URL-encoded bodies (from HTML forms, like login)
 app.use(bodyParser.urlencoded({ extended: true }));
 // Parse JSON bodies (for API requests like updating availability)
 app.use(bodyParser.json());
 
-// Session middleware configuration
+// Session middleware configuration - MUST come before routes that use sessions
 app.use(session({
-    secret: SESSION_SECRET, // Use the secret loaded from .env or Render's env vars
+    secret: SESSION_SECRET, // The secret used to sign the session ID cookie
     resave: false, // Don't save session if unmodified
     saveUninitialized: false, // Don't create session until something stored
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours (cookie expiration)
-        secure: process.env.NODE_ENV === 'production', // Use secure cookies (HTTPS) in production
-        httpOnly: true // Prevent client-side JS from accessing the cookie
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours (cookie expiration in milliseconds)
+        // 'secure: true' ensures cookies are only sent over HTTPS.
+        // For local development (HTTP), process.env.NODE_ENV is usually undefined or 'development',
+        // so 'secure' will be false. It will be true in production (Render uses HTTPS).
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true // Prevents client-side JavaScript from accessing the cookie
     }
 }));
 
 // Middleware to check if user is authenticated for admin routes
 function isAuthenticated(req, res, next) {
+    // Debugging logs for session state
+    console.log('--- isAuthenticated middleware hit ---');
+    console.log('Request URL:', req.originalUrl);
+    console.log('Session ID:', req.sessionID); // Unique ID for each session
+    console.log('Is Authenticated (from session):', req.session.isAuthenticated);
+
     if (req.session.isAuthenticated) {
+        console.log('User IS authenticated. Proceeding to next.');
         next(); // User is authenticated, proceed to the next middleware or route handler
     } else {
+        console.log('User NOT authenticated. Redirecting to /login.');
         res.redirect('/login'); // Redirect to login page if not authenticated
     }
 }
@@ -56,29 +68,47 @@ function isAuthenticated(req, res, next) {
 
 // Route for the public menu display page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Corrected path to 'Public'
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Route for the login page
 app.get('/login', (req, res) => {
-    // If already authenticated, redirect to admin panel to avoid showing login page unnecessarily
+    // If user is already authenticated, redirect them directly to the admin panel
     if (req.session.isAuthenticated) {
+        console.log('Already authenticated, redirecting from /login to /admin.');
         return res.redirect('/admin');
     }
-    res.sendFile(path.join(__dirname, 'public', 'login.html')); // Corrected path to 'Public'
+    // Otherwise, serve the login page
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // Handle login form submission
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    // Basic authentication: Check if provided credentials match configured ADMIN_USERNAME and ADMIN_PASSWORD
+    // Debugging logs for login attempt
+    console.log('--- Login attempt POST /login ---');
+    console.log(`Attempted username: ${username}`);
+    // IMPORTANT: DO NOT LOG SENSITIVE PASSWORDS IN PRODUCTION! This is for debugging only.
+    console.log(`Configured username: ${ADMIN_USERNAME}, Configured password: ${ADMIN_PASSWORD}`);
+
+    // Authenticate user against environment variables
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         req.session.isAuthenticated = true; // Mark session as authenticated
-        req.session.username = username; // Optionally store username in session
-        res.redirect('/admin'); // Redirect to the protected admin panel on success
+        req.session.username = username; // Optionally store username in session for display or further checks
+        console.log('Login successful! Session set to isAuthenticated:', req.session.isAuthenticated);
+        console.log('Redirecting to /admin...');
+        // Save session before redirecting to ensure it's persisted (important for some session stores)
+        req.session.save(err => {
+            if (err) {
+                console.error('Error saving session after login:', err);
+                return res.status(500).send('Login successful, but session could not be saved.');
+            }
+            res.redirect('/admin'); // Redirect to the protected admin panel on successful login
+        });
     } else {
-        // If authentication fails, render a simple error page
+        console.log('Login failed: Invalid username or password.');
+        // If authentication fails, send back a simple HTML response indicating failure
         res.status(401).send(`
             <!DOCTYPE html>
             <html lang="en">
@@ -87,6 +117,7 @@ app.post('/login', async (req, res) => {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Login Failed</title>
                 <link rel="stylesheet" href="/style.css"> <style>
+                    /* Basic styling for the error message page/snippet */
                     body {
                         font-family: 'Arial', sans-serif;
                         background-color: #f4f4f4;
@@ -133,19 +164,22 @@ app.post('/login', async (req, res) => {
 
 // Handle logout
 app.get('/logout', (req, res) => {
+    console.log('--- Logout GET /logout ---');
     req.session.destroy(err => { // Destroy the session associated with the request
         if (err) {
             console.error('Error destroying session:', err);
             return res.status(500).send('Could not log out.');
         }
         res.clearCookie('connect.sid'); // Clear the session cookie from the client's browser
+        console.log('Session destroyed, cookie cleared. Redirecting to /login.');
         res.redirect('/login'); // Redirect to login page after successful logout
     });
 });
 
 // Protected route for the admin panel - uses isAuthenticated middleware
 app.get('/admin', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Admin', 'admin.html')); // Corrected path to 'Admin'
+    console.log('--- Accessing /admin route (authenticated) ---');
+    res.sendFile(path.join(__dirname, 'Admin', 'admin.html'));
 });
 
 // API endpoint to get full menu data
@@ -172,6 +206,7 @@ app.get('/api/available-items', async (req, res) => {
 
 // API endpoint to update available items - protected by authentication
 app.post('/api/update-availability', isAuthenticated, async (req, res) => {
+    console.log('--- Update Availability API hit (authenticated) ---');
     const { availableItems } = req.body;
     try {
         // Write the updated available items to the JSON file
@@ -188,4 +223,5 @@ app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`Public display: http://localhost:${PORT}/`);
     console.log(`Admin login: http://localhost:${PORT}/login`);
+    console.log('--- Server Started ---');
 });
