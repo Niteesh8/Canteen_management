@@ -22,7 +22,7 @@ const AVAILABILITY_FILE = path.join(__dirname, 'Data', 'available.json'); // Cor
 // --- Middleware ---
 
 // Serve static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'Public'))); // Corrected path to 'Public'
+app.use(express.static(path.join(__dirname, 'public'))); // Corrected path to 'Public'
 // Serve static files (CSS, JS) from the 'Admin' directory specifically under the /admin path
 app.use('/admin', express.static(path.join(__dirname, 'Admin'))); // Corrected path to 'Admin'
 
@@ -56,7 +56,7 @@ function isAuthenticated(req, res, next) {
 
 // Route for the public menu display page
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'index.html')); // Corrected path to 'Public'
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Corrected path to 'Public'
 });
 
 // Route for the login page
@@ -65,7 +65,7 @@ app.get('/login', (req, res) => {
     if (req.session.isAuthenticated) {
         return res.redirect('/admin');
     }
-    res.sendFile(path.join(__dirname, 'Public', 'login.html')); // Corrected path to 'Public'
+    res.sendFile(path.join(__dirname, 'public', 'login.html')); // Corrected path to 'Public'
 });
 
 // Handle login form submission
