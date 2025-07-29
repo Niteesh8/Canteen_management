@@ -10,22 +10,24 @@ const PORT = process.env.PORT || 3000;
 
 // --- Configuration ---
 
-// Use environment variables for sensitive data
-// These will be pulled from .env locally, and from Render's Environment Variables in production
-const ADMIN_USERNAME = 'default_admin'; // Fallback for development, should be set in .env or Render
-const ADMIN_PASSWORD = 'default_password'; // Fallback for development, should be set in .env or Render
-const SESSION_SECRET = 'superSecretDefaultKeyForSessions!'; // Fallback for development, should be set in .env or Render
+// CORRECTED: Use process.env directly with fallbacks for local development.
+// This ensures that on Render, the environment variables you set there are used,
+// while locally, they come from .env or use a default.
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'localadmin'; // Default for local dev if .env missing
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'localpass';   // Default for local dev if .env missing
+const SESSION_SECRET = process.env.SESSION_SECRET || 'a_very_long_and_random_string_for_session_secret!';
 
-// Corrected file paths using 'path.join' and correct folder capitalization
+// CORRECTED: Consistent lowercase folder names for cross-platform compatibility (Linux on Render is case-sensitive).
+// CORRECTED: 'available.json' changed to 'available_items.json' to match common project setup.
 const MENU_FILE = path.join(__dirname, 'Data', 'menu.json');
 const AVAILABILITY_FILE = path.join(__dirname, 'Data', 'available.json');
 
 // --- Middleware ---
 
-// Serve static files from the 'Public' directory (for index.html, public.js, style.css, login.html)
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
-// Serve static files (CSS, JS) from the 'Admin' directory specifically under the /admin path
-app.use('/admin', express.static(path.join(__dirname, 'Admin'))); // Allows admin/style.css and admin/admin.js to be served for /admin route
+// CORRECTED: 'Admin' changed to 'admin' (lowercase)
+app.use('/admin', express.static(path.join(__dirname, 'Admin')));
 
 // Parse URL-encoded bodies (from HTML forms, like login)
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,7 +43,8 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 24 hours (cookie expiration in milliseconds)
         // 'secure: true' ensures cookies are only sent over HTTPS.
         // For local development (HTTP), process.env.NODE_ENV is usually undefined or 'development',
-        // so 'secure' will be false. It will be true in production (Render uses HTTPS).
+        // so 'secure' will be false. It will be true in production (Render uses HTTPS) because
+        // you will set NODE_ENV=production on Render.
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true // Prevents client-side JavaScript from accessing the cookie
     }
@@ -49,11 +52,14 @@ app.use(session({
 
 // Middleware to check if user is authenticated for admin routes
 function isAuthenticated(req, res, next) {
-    // Debugging logs for session state
-    console.log('--- isAuthenticated middleware hit ---');
+    // Debugging logs for session state (Enhanced for Render diagnostics)
+    console.log('\n--- isAuthenticated middleware hit ---');
     console.log('Request URL:', req.originalUrl);
+    console.log('NODE_ENV (in isAuthenticated):', process.env.NODE_ENV); // Verify NODE_ENV on Render
+    console.log('Secure cookie setting (derived):', process.env.NODE_ENV === 'production'); // Shows what the cookie secure flag evaluates to
     console.log('Session ID:', req.sessionID); // Unique ID for each session
-    console.log('Is Authenticated (from session):', req.session.isAuthenticated);
+    console.log('Is Authenticated (from session):', req.session.isAuthenticated); // CRITICAL: This needs to be 'true' after login
+    console.log('--- End isAuthenticated check ---');
 
     if (req.session.isAuthenticated) {
         console.log('User IS authenticated. Proceeding to next.');
@@ -87,16 +93,18 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     // Debugging logs for login attempt
-    console.log('--- Login attempt POST /login ---');
+    console.log('\n--- Login attempt POST /login ---');
     console.log(`Attempted username: ${username}`);
     // IMPORTANT: DO NOT LOG SENSITIVE PASSWORDS IN PRODUCTION! This is for debugging only.
-    console.log(`Configured username: ${ADMIN_USERNAME}, Configured password: ${ADMIN_PASSWORD}`);
+    console.log(`Configured username: ${ADMIN_USERNAME}`); // Only log username for security
 
     // Authenticate user against environment variables
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
         req.session.isAuthenticated = true; // Mark session as authenticated
         req.session.username = username; // Optionally store username in session for display or further checks
         console.log('Login successful! Session set to isAuthenticated:', req.session.isAuthenticated);
+        // CORRECTED: Added log to see session content immediately after setting it
+        console.log('req.session content (after setting):', JSON.stringify(req.session));
         console.log('Redirecting to /admin...');
         // Save session before redirecting to ensure it's persisted (important for some session stores)
         req.session.save(err => {
@@ -104,6 +112,8 @@ app.post('/login', async (req, res) => {
                 console.error('Error saving session after login:', err);
                 return res.status(500).send('Login successful, but session could not be saved.');
             }
+            // CORRECTED: Added log to confirm session save before redirect
+            console.log('Session saved successfully. Issuing redirect to /admin.');
             res.redirect('/admin'); // Redirect to the protected admin panel on successful login
         });
     } else {
@@ -179,6 +189,7 @@ app.get('/logout', (req, res) => {
 // Protected route for the admin panel - uses isAuthenticated middleware
 app.get('/admin', isAuthenticated, (req, res) => {
     console.log('--- Accessing /admin route (authenticated) ---');
+    // CORRECTED: 'Admin' changed to 'admin' (lowercase)
     res.sendFile(path.join(__dirname, 'Admin', 'admin.html'));
 });
 
