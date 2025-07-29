@@ -32,7 +32,8 @@ const availableFilePath = path.join(__dirname, 'data', 'available.json');
 
 // --- API Endpoints ---
 
-// 1. Get full menu for admin page and public page lookup
+// 1. Get full menu for admin page
+// This API is called by admin.js to populate the list of all possible menu items.
 app.get('/api/menu', (req, res) => {
     fs.readFile(menuFilePath, 'utf8', (err, data) => {
         if (err) {
