@@ -15,11 +15,11 @@ app.get('/', (req, res) => {
 });
 
 // Serve static files for admin panel (e.g., admin/admin.js, admin/style.css if they exist separately)
-app.use('/admin', express.static(path.join(__dirname, 'admin')));
+app.use('/admin', express.static(path.join(__dirname, 'Admin')));
 
 // Explicitly serve admin.html when someone navigates directly to /admin
 app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin', 'admin.html'));
+    res.sendFile(path.join(__dirname, 'Admin', 'admin.html'));
 });
 
 // Middleware to parse JSON and URL-encoded data from incoming requests
