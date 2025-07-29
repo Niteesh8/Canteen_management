@@ -7,6 +7,7 @@ require('dotenv').config(); // Load environment variables from .env file (for lo
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1);
 
 // --- Configuration ---
 
