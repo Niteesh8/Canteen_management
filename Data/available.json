@@ -1,9 +1,15 @@
 {
   "availableItems": [
-    "tea",
-    "samosa",
-    "juice",
-    "milk"
+    "bakery_001",
+    "bakery_002",
+    "bakery_004",
+    "fastfood_001",
+    "fastfood_002",
+    "fastfood_003",
+    "fastfood_004",
+    "fastfood_005",
+    "fastfood_006",
+    "icecream_004"
   ],
-  "lastUpdated": "2025-07-28T12:42:07.205Z"
+  "lastUpdated": "2025-07-29T05:15:03.289Z"
 }

@@ -1,61 +1,87 @@
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', () => {
     const checkboxContainer = document.getElementById('checkbox-container');
     const adminForm = document.getElementById('admin-form');
-    const messageDiv = document.getElementById('message');
+    const messageElement = document.getElementById('message');
 
-    let allMenuItems = []; // To store the full menu
+    let allMenuItems = []; // To store all menu items with their details
 
-    // Function to load and display checkboxes
-    async function loadMenuAndAvailability() {
+    // Function to fetch full menu and available items
+    async function fetchMenuAndAvailability() {
         try {
-            // Fetch full menu
+            // Fetch full menu from the server
             const menuResponse = await fetch('/api/menu');
-            allMenuItems = await menuResponse.json();
+            if (!menuResponse.ok) {
+                throw new Error(`HTTP error! status: ${menuResponse.status}`);
+            }
+            const menuData = await menuResponse.json();
+            allMenuItems = menuData.categories.flatMap(category => category.items); // Flatten all items for easy lookup
 
-            // Fetch current availability
-            const availableResponse = await fetch('/api/available-items');
-            const availableData = await availableResponse.json();
-            const currentlyAvailableIds = availableData.availableItems;
+            // Fetch currently available items
+            const availabilityResponse = await fetch('/api/available-items');
+            if (!availabilityResponse.ok) {
+                throw new Error(`HTTP error! status: ${availabilityResponse.status}`);
+            }
+            const availabilityData = await availabilityResponse.json();
+            const availableItemIds = new Set(availabilityData.availableItems);
 
-            checkboxContainer.innerHTML = ''; // Clear loading message
+            // Clear previous checkboxes
+            checkboxContainer.innerHTML = '';
 
-            allMenuItems.forEach(item => {
-                const div = document.createElement('div');
-                div.classList.add('menu-item-checkbox');
+            // Render checkboxes grouped by category
+            menuData.categories.forEach(category => {
+                const categoryHeader = document.createElement('h3');
+                categoryHeader.textContent = category.name;
+                categoryHeader.style.marginTop = '20px';
+                categoryHeader.style.marginBottom = '10px';
+                categoryHeader.style.color = '#555';
+                categoryHeader.style.textAlign = 'left';
+                checkboxContainer.appendChild(categoryHeader);
 
-                const label = document.createElement('label');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.name = 'availableItems'; // All checkboxes should have the same name
-                checkbox.value = item.id;
+                // Create a wrapper for items within this category for side-by-side display
+                const categoryItemsWrapper = document.createElement('div');
+                categoryItemsWrapper.className = 'category-items-wrapper'; // This class is styled in admin/style.css
+                checkboxContainer.appendChild(categoryItemsWrapper); // Append wrapper to the main container
 
-                // Check if this item is currently available
-                if (currentlyAvailableIds.includes(item.id)) {
-                    checkbox.checked = true;
-                }
+                category.items.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'menu-item-checkbox'; // Class for individual item styling
+                    const input = document.createElement('input');
+                    input.type = 'checkbox';
+                    input.id = item.id; // Use item.id for the checkbox ID
+                    input.name = 'availableItems'; // Name for form submission
+                    input.value = item.id; // Value to send to server
 
-                label.appendChild(checkbox);
-                label.appendChild(document.createTextNode(item.name));
-                div.appendChild(label);
-                checkboxContainer.appendChild(div);
+                    // Check if item is currently available
+                    if (availableItemIds.has(item.id)) {
+                        input.checked = true;
+                    }
+
+                    const label = document.createElement('label');
+                    label.htmlFor = item.id;
+                    label.textContent = item.name; // Display only name (no price)
+
+                    div.appendChild(input);
+                    div.appendChild(label);
+                    // Append the item div to the category-specific wrapper
+                    categoryItemsWrapper.appendChild(div);
+                });
             });
 
         } catch (error) {
-            console.error('Error loading menu or availability:', error);
-            checkboxContainer.innerHTML = '<p style="color: red;">Error loading menu. Please try again.</p>';
+            console.error('Failed to load menu or availability:', error);
+            checkboxContainer.innerHTML = '<p style="color: red;">Error loading menu items. Please check server logs.</p>';
         }
     }
 
     // Handle form submission
-    adminForm.addEventListener('submit', async function(event) {
+    adminForm.addEventListener('submit', async (event) => {
         event.preventDefault(); // Prevent default form submission
 
-        messageDiv.textContent = 'Updating...';
-        messageDiv.style.color = 'orange';
+        messageElement.textContent = 'Updating...';
+        messageElement.style.color = 'orange';
 
-        const selectedCheckboxes = Array.from(adminForm.elements.availableItems)
-                                    .filter(checkbox => checkbox.checked)
-                                    .map(checkbox => checkbox.value);
+        const selectedCheckboxes = Array.from(checkboxContainer.querySelectorAll('input[type="checkbox"]:checked'));
+        const selectedItemIds = selectedCheckboxes.map(checkbox => checkbox.value);
 
         try {
             const response = await fetch('/api/update-availability', {
@@ -63,27 +89,23 @@ document.addEventListener('DOMContentLoaded', async function() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ availableItems: selectedCheckboxes })
+                body: JSON.stringify({ availableItems: selectedItemIds })
             });
 
-            if (response.ok) {
-                messageDiv.textContent = 'Availability updated successfully!';
-                messageDiv.style.color = 'green';
-                // Reload the checkboxes to reflect the saved state if needed (good for confirmation)
-                await loadMenuAndAvailability();
-            } else {
-                const errorText = await response.text();
-                messageDiv.textContent = `Error: ${errorText}`;
-                messageDiv.style.color = 'red';
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
+
+            const result = await response.text(); // Server sends plain text response
+            messageElement.textContent = result;
+            messageElement.style.color = 'green';
         } catch (error) {
             console.error('Error updating availability:', error);
-            messageDiv.textContent = 'Network error during update.';
-            messageDiv.style.color = 'red';
+            messageElement.textContent = `Error: ${error.message}. Please try again.`;
+            messageElement.style.color = 'red';
         }
-        setTimeout(() => messageDiv.textContent = '', 3000); // Clear message after 3 seconds
     });
 
-    // Initial load
-    loadMenuAndAvailability();
+    // Initial fetch when the page loads
+    fetchMenuAndAvailability();
 });

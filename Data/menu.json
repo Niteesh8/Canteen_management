@@ -1,14 +1,61 @@
-[
-  {"id": "tea", "name": "Tea"},
-  {"id": "coffee", "name": "Coffee"},
-  {"id": "samosa", "name": "Samosa"},
-  {"id": "bajji", "name": "Bajji"},
-  {"id": "idli", "name": "Idli"},
-  {"id": "dosa", "name": "Dosa"},
-  {"id": "juice", "name": "Fresh Juice"},
-  {"id": "milk", "name": "Milk"},
-  {"id": "water", "name": "Water"},
-  {"id": "soda", "name": "Soda"},
-  {"id": "coke", "name": "Coke"},
-  {"id": "pepsi", "name": "Pepsi"}
-]
+{
+  "categories": [
+    {
+      "name": "BAKERY",
+      "items": [
+        { "id": "bakery_001", "name": "Veg puff", "price": 25 },
+        { "id": "bakery_002", "name": "Egg puff", "price": 30 },
+        { "id": "bakery_003", "name": "Chicken puff", "price": 35 },
+        { "id": "bakery_004", "name": "Aloo samosa", "price": 10 },
+        { "id": "bakery_005", "name": "Sweet corn samosa", "price": 15 },
+        { "id": "bakery_006", "name": "Cup cakes", "price": 20 },
+        { "id": "bakery_007", "name": "Cream bun", "price": 20 },
+        { "id": "bakery_008", "name": "Roll cake", "price": 15 },
+        { "id": "bakery_009", "name": "Aloo bonda", "price": 10 },
+        { "id": "bakery_010", "name": "Oil pakodi", "price": 20 }
+      ]
+    },
+    {
+      "name": "FAST FOODS",
+      "items": [
+        { "id": "fastfood_001", "name": "Veg fried rice", "price": 60 },
+        { "id": "fastfood_002", "name": "Egg fried rice", "price": 80 },
+        { "id": "fastfood_003", "name": "Chicken fried rice", "price": 100 },
+        { "id": "fastfood_004", "name": "Veg noodles", "price": 60 },
+        { "id": "fastfood_005", "name": "Egg noodles", "price": 80 },
+        { "id": "fastfood_006", "name": "Chicken noodles", "price": 100 }
+      ]
+    },
+    {
+      "name": "ICE CREAM",
+      "items": [
+        { "id": "icecream_001", "name": "Mango bar", "price": 10 },
+        { "id": "icecream_002", "name": "Orange bar", "price": 10 },
+        { "id": "icecream_003", "name": "Chocobar", "price": 25 },
+        { "id": "icecream_004", "name": "Vanilla cone", "price": 35 },
+        { "id": "icecream_005", "name": "Chocolate cone", "price": 35 },
+        { "id": "icecream_006", "name": "Butterscotch cone", "price": 25 },
+        { "id": "icecream_007", "name": "Black current cone", "price": 25 },
+        { "id": "icecream_008", "name": "Chocolate cup", "price": 45 },
+        { "id": "icecream_009", "name": "Butterscotch cup", "price": 45 }
+      ]
+    },
+    {
+      "name": "SOFT DRINKS",
+      "items": [
+        { "id": "softdrink_001", "name": "Mountain dew", "price": 10 },
+        { "id": "softdrink_002", "name": "Sprite", "price": 20 },
+        { "id": "softdrink_003", "name": "Thums up", "price": 20 },
+        { "id": "softdrink_004", "name": "Mazaa", "price": 20 },
+        { "id": "softdrink_005", "name": "7 up", "price": 20 },
+        { "id": "softdrink_006", "name": "Mirinda", "price": 20 },
+        { "id": "softdrink_007", "name": "Pulpy orange", "price": 20 },
+        { "id": "softdrink_008", "name": "Fanta", "price": 20 },
+        { "id": "softdrink_009", "name": "Pepsi", "price": 20 },
+        { "id": "softdrink_010", "name": "Limca", "price": 20 },
+        { "id": "softdrink_011", "name": "Badam milk", "price": 30 },
+        { "id": "softdrink_012", "name": "Redbull", "price": 120 }
+      ]
+    }
+  ]
+}

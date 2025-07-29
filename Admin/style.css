@@ -1,0 +1,118 @@
+/* admin/style.css - Admin-specific styles overriding/extending public/style.css */
+
+/* Override body and container if admin needs different overall layout/spacing */
+body {
+    /* Adjust alignment for admin layout if needed, otherwise public/style.css will apply */
+    align-items: flex-start; /* Often better for admin pages with more content */
+    padding-top: 30px; /* Add some top padding */
+    padding-bottom: 30px;
+}
+
+.container {
+    /* You might want a slightly wider container for the side-by-side layout */
+    max-width: 900px; 
+    padding: 30px; /* Adjust padding if necessary */
+}
+
+/* Category Headers in Admin Panel (can be same as public or adjusted) */
+#checkbox-container h3 {
+    font-size: 1.6em;
+    color: #4CAF50; /* Green color for category names (consistent with public) */
+    margin-top: 25px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #e0e0e0; /* Underline categories */
+    padding-bottom: 5px;
+    text-align: left; /* Ensure it stays left-aligned */
+}
+
+/* NEW: Styles for the wrapper that holds items within a category for side-by-side display */
+.category-items-wrapper {
+    display: flex; /* Enable flexbox for side-by-side layout */
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    gap: 15px; /* Space between items */
+    justify-content: flex-start; /* Align items to the start */
+    margin-bottom: 20px; /* Space below each category block */
+}
+
+/* Style for each individual menu item checkbox container */
+.menu-item-checkbox {
+    display: flex; /* Make checkbox and label inline */
+    align-items: center; /* Vertically align checkbox and text */
+    /* Calculate width for 3 items per row, accounting for gap */
+    width: calc(33.33% - 10px); 
+    min-width: 180px; /* Minimum width for item to avoid squishing too much */
+    background-color: #f0f4f8; /* Light blue-grey background - distinct from public item cards */
+    padding: 10px 12px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box; /* Include padding in width calculation */
+    cursor: pointer; /* Indicate the whole box is clickable/selectable */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.menu-item-checkbox:hover {
+    background-color: #e2e6ea; /* Slightly darker on hover */
+}
+
+.menu-item-checkbox input[type="checkbox"] {
+    margin-right: 8px; /* Space between checkbox and label */
+    transform: scale(1.2); /* Slightly larger checkboxes */
+    cursor: pointer;
+}
+
+.menu-item-checkbox label {
+    font-size: 1em;
+    color: #333;
+    cursor: pointer;
+    flex-grow: 1; /* Allow label to take available space */
+}
+
+/* Styles for the form button and messages */
+#admin-form button[type="submit"] { /* Target the submit button specifically */
+    padding: 12px 25px;
+    background-color: #28a745; /* Green for update action - consistent with public */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 30px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#admin-form button[type="submit"]:hover {
+    background-color: #218838; /* Darker green on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+#admin-form button[type="submit"]:active {
+    transform: translateY(0); /* Press effect */
+}
+
+#message {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: green; /* Default success color */
+}
+/* This ensures the red error message from JS overrides the green default */
+#message[style*="red"] {
+    color: red !important;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+        max-width: 100%; /* Use full width on smaller screens */
+    }
+    .menu-item-checkbox {
+        width: calc(50% - 10px); /* 2 items per row on medium screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-item-checkbox {
+        width: 100%; /* 1 item per row on small screens */
+    }
+}
