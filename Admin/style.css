@@ -9,12 +9,12 @@ body {
 }
 
 .container {
-    /* You might want a slightly wider container for the side-by-side layout */
+    /* You might want a slightly wider container for the side-by-side layout in admin */
     max-width: 900px; 
     padding: 30px; /* Adjust padding if necessary */
 }
 
-/* Category Headers in Admin Panel (can be same as public or adjusted) */
+/* Category Headers in Admin Panel */
 #checkbox-container h3 {
     font-size: 1.6em;
     color: #4CAF50; /* Green color for category names (consistent with public) */
@@ -25,7 +25,7 @@ body {
     text-align: left; /* Ensure it stays left-aligned */
 }
 
-/* NEW: Styles for the wrapper that holds items within a category for side-by-side display */
+/* Styles for the wrapper that holds items within a category for side-by-side display */
 .category-items-wrapper {
     display: flex; /* Enable flexbox for side-by-side layout */
     flex-wrap: wrap; /* Allow items to wrap to the next line */

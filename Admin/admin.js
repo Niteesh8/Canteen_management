@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fetch full menu from the server
             const menuResponse = await fetch('/api/menu');
             if (!menuResponse.ok) {
+                // If not OK, check if it's a redirect to login (status 302 or similar)
+                // This is a basic client-side check, server handles actual redirect
+                if (menuResponse.redirected) {
+                    window.location.href = menuResponse.url; // Go to the redirected URL (e.g., /login)
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${menuResponse.status}`);
             }
             const menuData = await menuResponse.json();
@@ -19,6 +25,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fetch currently available items
             const availabilityResponse = await fetch('/api/available-items');
             if (!availabilityResponse.ok) {
+                if (availabilityResponse.redirected) {
+                    window.location.href = availabilityResponse.url;
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${availabilityResponse.status}`);
             }
             const availabilityData = await availabilityResponse.json();
@@ -93,6 +103,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                if (response.redirected) {
+                    window.location.href = response.url; // Redirect if API is protected and redirects
+                    return;
+                }
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
