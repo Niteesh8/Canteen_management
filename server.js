@@ -36,17 +36,14 @@ app.use(bodyParser.json());
 
 // Session middleware configuration - MUST come before routes that use sessions
 app.use(session({
-    secret: SESSION_SECRET, // The secret used to sign the session ID cookie
-    resave: false, // Don't save session if unmodified
-    saveUninitialized: false, // Don't create session until something stored
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-        maxAge: 1000 * 60 * 60 * 24, // 24 hours (cookie expiration in milliseconds)
-        // 'secure: true' ensures cookies are only sent over HTTPS.
-        // For local development (HTTP), process.env.NODE_ENV is usually undefined or 'development',
-        // so 'secure' will be false. It will be true in production (Render uses HTTPS) because
-        // you will set NODE_ENV=production on Render.
+        maxAge: 1000 * 60 * 60 * 24, // 24 hours
         secure: process.env.NODE_ENV === 'production',
-        httpOnly: true // Prevents client-side JavaScript from accessing the cookie
+        httpOnly: true,
+        sameSite: 'Lax' // <-- ADD THIS LINE
     }
 }));
 
