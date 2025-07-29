@@ -12,9 +12,9 @@ const PORT = process.env.PORT || 3000;
 
 // Use environment variables for sensitive data
 // These will be pulled from .env locally, and from Render's Environment Variables in production
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'default_admin'; // Fallback for development, should be set in .env or Render
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'default_password'; // Fallback for development, should be set in .env or Render
-const SESSION_SECRET = process.env.SESSION_SECRET || 'superSecretDefaultKeyForSessions!'; // Fallback for development, should be set in .env or Render
+const ADMIN_USERNAME = 'default_admin'; // Fallback for development, should be set in .env or Render
+const ADMIN_PASSWORD = 'default_password'; // Fallback for development, should be set in .env or Render
+const SESSION_SECRET = 'superSecretDefaultKeyForSessions!'; // Fallback for development, should be set in .env or Render
 
 // Corrected file paths using 'path.join' and correct folder capitalization
 const MENU_FILE = path.join(__dirname, 'Data', 'menu.json');
