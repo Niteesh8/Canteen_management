@@ -218,8 +218,14 @@ app.post('/api/update-availability', isAuthenticated, async (req, res) => {
     console.log('--- Update Availability API hit (authenticated) ---');
     const { availableItems } = req.body;
     try {
-        // Write the updated available items to the JSON file
-        await fs.writeFile(AVAILABILITY_FILE, JSON.stringify({ availableItems }, null, 2), 'utf8');
+        // Create an object to store both availableItems and the current timestamp
+        const updatedData = {
+            availableItems: availableItems,
+            lastUpdated: new Date().toISOString() // Store current time in ISO format
+        };
+
+        // Write the updated available items and timestamp to the JSON file
+        await fs.writeFile(AVAILABILITY_FILE, JSON.stringify(updatedData, null, 2), 'utf8');
         res.send('Availability updated successfully!');
     } catch (error) {
         console.error('Error writing available items file:', error);

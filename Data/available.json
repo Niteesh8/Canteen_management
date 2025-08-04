@@ -1,4 +1,25 @@
 {
-  "availableItems": [],
-  "lastUpdated": ""
+  "availableItems": [
+    "bakery_001",
+    "bakery_002",
+    "bakery_003",
+    "bakery_004",
+    "bakery_005",
+    "bakery_006",
+    "bakery_007",
+    "bakery_008",
+    "bakery_009",
+    "bakery_010",
+    "fastfood_001",
+    "fastfood_002",
+    "fastfood_003",
+    "fastfood_004",
+    "fastfood_005",
+    "fastfood_006",
+    "icecream_003",
+    "icecream_004",
+    "icecream_006",
+    "icecream_009"
+  ],
+  "lastUpdated": "2025-08-04T08:20:37.592Z"
 }

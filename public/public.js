@@ -70,12 +70,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 menuItemsContainer.innerHTML = '<p class="no-items">No items available at the moment. Please check back later!</p>';
             }
 
+            // --- BEGIN: Updated Logic for Last Updated Timestamp ---
             if (availabilityData.lastUpdated) {
                 const date = new Date(availabilityData.lastUpdated);
+                
+                // Option 1: Simple formatting
                 lastUpdatedElement.textContent = `Last updated: ${date.toLocaleString()}`;
+                
+                // Option 2: More controlled formatting (e.g., "August 4, 2025 at 07:30 PM")
+                // const formattedDate = date.toLocaleDateString('en-IN', {
+                //     year: 'numeric',
+                //     month: 'long',
+                //     day: 'numeric'
+                // });
+                // const formattedTime = date.toLocaleTimeString('en-IN', {
+                //     hour: '2-digit',
+                //     minute: '2-digit',
+                //     hour12: true
+                // });
+                // lastUpdatedElement.textContent = `Last updated: ${formattedDate} at ${formattedTime}`;
+
             } else {
                 lastUpdatedElement.textContent = `Last updated: Never (or data unavailable)`;
             }
+            // --- END: Updated Logic for Last Updated Timestamp ---
 
         } catch (error) {
             console.error('Failed to fetch and update menu:', error);
@@ -85,5 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     fetchAndUpdateMenu();
+    // To automatically refresh the menu every 30 seconds
     // setInterval(fetchAndUpdateMenu, 30000);
 });
